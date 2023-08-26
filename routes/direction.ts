@@ -1,18 +1,19 @@
 import express from "express";
 const router = express.Router();
-const directionController = require("../controllers/directions-controller");
+const {getDirectionData} = require("../controllers/direction-controller");
+const {getAllLocations, postNewLocation, getSingleLocation, updateLocation, deleteLocation} = require("../controllers/location-controller");
 
-router.route("/:originId/:destId")
-    .get()
 
+router.route("/:origin/:dest/:time")
+    .get(getDirectionData)
 
 router.route("/location")
-    .get()
-    .post()
+    .get(getAllLocations)
+    .post(postNewLocation)
 
 router.route("/location/:locId")
-    .get()
-    .put()
-    .delete()
+    .get(getSingleLocation)
+    .put(updateLocation)
+    .delete(deleteLocation)
 
 module.exports = router;

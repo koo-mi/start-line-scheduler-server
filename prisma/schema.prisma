@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// User Information
+
+model User {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique
+  password     String
+  name         String
+  createAt     DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  User_Profile User_Profile[]
+}
+
+model User_Profile {
+  id                  Int      @id @default(autoincrement())
+  default_home        String
+  default_work        String
+  default_mode        String
+  default_target_time String
+  createAt            DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user_id   User        @relation(fields: [userId], references: [id])
+  userId    Int
+  Location  Location[]
+  Checklist Checklist[]
+}
+
+model Location {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile_id     User_Profile @relation(fields: [user_ProfileId], references: [id])
+  user_ProfileId Int
+}
+
+model Checklist {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  isDaily     Boolean
+  priority    String
+  createAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  profile_id     User_Profile @relation(fields: [user_ProfileId], references: [id])
+  user_ProfileId Int
+}
+
+// For saving Google API Data
+model Direction {
+  id                 Int      @id @default(autoincrement())
+  origin             String
+  destination        String
+  arrival_time       String
+  est_departure_time String
+  createAt           DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  Navigation Navigation[]
+}
+
+model Navigation {
+  id          Int      @id @default(autoincrement())
+  order       Int
+  instruction String
+  distance    String
+  duration    String
+  createAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  direction_id Direction @relation(fields: [directionId], references: [id])
+  directionId  Int
+}

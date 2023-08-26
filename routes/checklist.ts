@@ -1,13 +1,13 @@
 import express from "express";
 const router = express.Router();
-const checklistController = require("../controllers/checklist-controller");
+const {getChecklist, createNewItem, editItem, deleteItem} = require("../controllers/checklist-controller");
 
 router.route("/")
-    .get()
-    .post()
+    .get(getChecklist)
+    .post(createNewItem);
 
 router.route("/:itemId")
-    .put()
-    .delete()
+    .put(editItem)
+    .delete(deleteItem);
 
 module.exports = router;
