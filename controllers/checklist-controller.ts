@@ -19,6 +19,24 @@ async function getChecklist(req: Request, res: Response) {
     return res.status(200).json(checklistData);
 }
 
+/* Get a single checklist item by ID */
+async function getChecklistItem(req: Request, res: Response) {
+    const decode = authorize(req, res);
+    if (!decode) { return };
+    const { profile_id } = decode;
+
+    const {itemId} = req.params;
+
+    const itemData = await prisma.checklist.findUnique({
+        where: {
+            id: Number(itemId),
+            user_ProfileId: profile_id
+        }
+    })
+
+    return res.status(200).json(itemData);
+}
+
 
 /* Post new checklist item */
 async function createNewItem(req: Request, res: Response) {
@@ -30,8 +48,8 @@ async function createNewItem(req: Request, res: Response) {
     // Validating request
     const { title, description, isDaily, priority } = req.body;
 
-    if (!title || !description || !isDaily || !priority) {
-        return res.status(400).json({ message: "Must have all fields" })
+    if (!title || !String(isDaily) || !priority) {
+        return res.status(400).json({ message: "Must have all required fields" })
     }
 
     // Save it into database
@@ -113,6 +131,7 @@ async function deleteItem(req: Request, res: Response) {
 
 module.exports = {
     getChecklist,
+    getChecklistItem,
     createNewItem,
     editItem,
     deleteItem

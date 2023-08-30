@@ -13,7 +13,7 @@ router.route("/")
 
         // Validate - Empty
         if (!name || !username || !password || !default_home || !default_work || !default_mode || !default_target_time) {
-            return res.status(400).json({ message: "You must provide name, username nad password." });
+            return res.status(400).json({ message: "You must provide all fields."});
         }
 
         // Check is username exist
@@ -21,7 +21,7 @@ router.route("/")
 
         // If username is already taken
         if (isUserExist) {
-            return res.status(400).json({ message: "Existing username. Please try different name." })
+            return res.status(400).json({ message: 'Existing username. Please try different name.' })
         }
 
         // encrypt password

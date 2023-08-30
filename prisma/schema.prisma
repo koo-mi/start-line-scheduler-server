@@ -31,7 +31,7 @@ model User_Profile {
   createAt            DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  user_id   User        @relation(fields: [userId], references: [id])
+  user_id   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   Location  Location[]
   Checklist Checklist[]
@@ -44,7 +44,7 @@ model Location {
   createAt  DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  profile_id     User_Profile @relation(fields: [user_ProfileId], references: [id])
+  profile_id     User_Profile @relation(fields: [user_ProfileId], references: [id], onDelete: Cascade)
   user_ProfileId Int
 }
 
@@ -57,7 +57,7 @@ model Checklist {
   createAt    DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  profile_id     User_Profile @relation(fields: [user_ProfileId], references: [id])
+  profile_id     User_Profile @relation(fields: [user_ProfileId], references: [id], onDelete: Cascade)
   user_ProfileId Int
 }
 
@@ -83,6 +83,6 @@ model Navigation {
   createAt    DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  direction_id Direction @relation(fields: [directionId], references: [id])
+  direction_id Direction @relation(fields: [directionId], references: [id], onDelete: Cascade)
   directionId  Int
 }

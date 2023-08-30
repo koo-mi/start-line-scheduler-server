@@ -20,7 +20,7 @@ export async function getDirectionData(req: Request, res: Response) {
 
 
 /* For Google Map Direction API call - for direction & summary */
-export async function directionApi(origin: string, dest: string, time: string, mode: string) {
+export async function directionApi(origin: string, dest: string, time: string | number, mode: string) {
     // Get data from Google Directions API
     const URL: string = process.env.GOOGLE_DIRECTION_URL;
     const API_KEY: string = process.env.GOOGLE_API_KEY;
