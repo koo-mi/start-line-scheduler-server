@@ -56,6 +56,7 @@ model Checklist {
   priority    String
   createAt    DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  isChecked   Boolean  @default(false)
 
   profile_id     User_Profile @relation(fields: [user_ProfileId], references: [id], onDelete: Cascade)
   user_ProfileId Int

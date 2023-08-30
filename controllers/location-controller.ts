@@ -52,7 +52,7 @@ async function postNewLocation(req: Request, res: Response) {
         data: {
             name,
             address,
-            user_ProfileId: profile_id
+            user_ProfileId: profile_id,
         }
     })
 

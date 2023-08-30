@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-const {getChecklist, getChecklistItem, createNewItem, editItem, deleteItem} = require("../controllers/checklist-controller");
+const { getChecklist, getChecklistItem, createNewItem, editItem, isChecked, deleteItem } = require("../controllers/checklist-controller");
 
 router.route("/")
     .get(getChecklist)
@@ -9,6 +9,7 @@ router.route("/")
 router.route("/:itemId")
     .get(getChecklistItem)
     .put(editItem)
+    .patch(isChecked)
     .delete(deleteItem);
 
 module.exports = router;

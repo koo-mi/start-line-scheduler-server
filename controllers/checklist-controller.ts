@@ -25,7 +25,7 @@ async function getChecklistItem(req: Request, res: Response) {
     if (!decode) { return };
     const { profile_id } = decode;
 
-    const {itemId} = req.params;
+    const { itemId } = req.params;
 
     const itemData = await prisma.checklist.findUnique({
         where: {
@@ -55,7 +55,8 @@ async function createNewItem(req: Request, res: Response) {
     // Save it into database
     await prisma.checklist.create({
         data: {
-            title, description, isDaily, priority, user_ProfileId: profile_id
+            title, description, isDaily, priority, user_ProfileId: profile_id,
+
         }
     })
 
@@ -101,6 +102,34 @@ async function editItem(req: Request, res: Response) {
     return res.status(200).json({ message: "Successfully updated" })
 }
 
+/* Patch when the item is checked/unchecked */
+async function isChecked(req: Request, res: Response) {
+    // Authorization 
+    const decode = authorize(req, res);
+    if (!decode) { return };
+    const { profile_id } = decode;
+    const id = Number(req.params.itemId);
+
+    const { checked } = req.body;
+
+    // Check if item exist
+    const currentData = await prisma.checklist.findFirst({
+        where: { id, user_ProfileId: profile_id }
+    });
+
+    // If the item doesn't exist
+    if (!currentData) {
+        return res.status(400).json({ message: `Unable to find your item with ID: ${id}` });
+    }
+
+    await prisma.checklist.update({
+        where: { id },
+        data: { isChecked: checked }
+    })
+
+    return res.status(200).json({ message: "Successfully updated" })
+}
+
 
 /* Delete checklist item */
 async function deleteItem(req: Request, res: Response) {
@@ -134,5 +163,6 @@ module.exports = {
     getChecklistItem,
     createNewItem,
     editItem,
+    isChecked,
     deleteItem
 }
