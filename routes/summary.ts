@@ -44,19 +44,6 @@ router.route("/")
         // Validate
         const { origin, dest, time, mode } = req.body;
 
-        // Convert Time to today's target time
-        const today = new Date().toString();
-        const dateArr = today.split(' ');
-        
-        const timeSplit = time.split(' ');
-        
-        dateArr[4] = `${timeSplit[0]}:${timeSplit[1]}:00`;
-        
-        const timeString = dateArr.join(' ');
-
-        const targetTime = Date.parse(timeString)/1000;
-        
-
         // Get location Data
         const locationData = await prisma.location.findMany({
             where: {
@@ -65,7 +52,7 @@ router.route("/")
         });
 
         // Get direction Data
-        const directionData = await directionApi(origin, dest, targetTime, mode)
+        const directionData = await directionApi(origin, dest, time, mode)
 
         // Get checklist Data
         const checklistData = await prisma.checklist.findMany({

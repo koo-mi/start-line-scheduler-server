@@ -31,9 +31,9 @@ async function postNewLocation(req: Request, res: Response) {
     const { profile_id } = decode;
 
     // Validating request
-    const { name, address } = req.body;
+    const { name, street, city, province } = req.body;
 
-    if (!name || !address) {
+    if (!name || !street || !city || !province) {
         return res.status(400).json({ message: "Must provide location name and address" })
     }
 
@@ -51,7 +51,9 @@ async function postNewLocation(req: Request, res: Response) {
     await prisma.location.create({
         data: {
             name,
-            address,
+            street,
+            city,
+            province,
             user_ProfileId: profile_id,
         }
     })
@@ -107,15 +109,25 @@ async function updateLocation(req: Request, res: Response) {
     const { locId } = req.params;
 
     // Validating request
-    const { name, address } = req.body
+    const { name, street, city, province } = req.body
 
-    if (!name || !address) {
+    if (!name || !street || !city || !province) {
         return res.status(400).json({ message: "Must provide location name and address" })
     }
 
     // If location data doesn't exist
     if (!checkLocationExist(locId, profile_id)) {
         return res.status(400).json({ message: `Unable to find your location with ID: ${locId}` });
+    }
+
+    // Check if name exist
+    const isNameExist = await prisma.location.findFirst({
+        where: { name, user_ProfileId: profile_id }
+    });
+
+    // If name is already taken
+    if (isNameExist) {
+        return res.status(400).json({ message: "Name Already in Use: Please select a different name" })
     }
 
     // Updating the data
@@ -125,11 +137,11 @@ async function updateLocation(req: Request, res: Response) {
             user_ProfileId: profile_id
         },
         data: {
-            name, address
+            name, street, city, province
         }
     });
 
-    return res.status(400).json({ message: "Successfully updated" });
+    return res.status(200).json({ message: "Successfully updated" });
 }
 
 

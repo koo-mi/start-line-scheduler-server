@@ -40,7 +40,9 @@ model User_Profile {
 model Location {
   id        Int      @id @default(autoincrement())
   name      String
-  address   String
+  street    String
+  city      String
+  province  String
   createAt  DateTime @default(now())
   updatedAt DateTime @updatedAt
 

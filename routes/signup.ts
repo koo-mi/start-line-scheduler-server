@@ -9,11 +9,11 @@ const bcrypt = require('bcryptjs');
 router.route("/")
     // Creating new account
     .post(async (req: Request, res: Response) => {
-        const { name, username, password, default_home, default_work, default_mode, default_target_time } = req.body;
+        const { name, username, password, default_mode, default_target_time, home_street, home_city, home_province, work_city, work_province, work_street } = req.body;
 
         // Validate - Empty
-        if (!name || !username || !password || !default_home || !default_work || !default_mode || !default_target_time) {
-            return res.status(400).json({ message: "You must provide all fields."});
+        if (!name || !username || !password || !home_street || !home_city || !home_province || !work_street || !work_city || !work_province || !default_mode || !default_target_time) {
+            return res.status(400).json({ message: "You must provide all fields." });
         }
 
         // Check is username exist
@@ -27,6 +27,10 @@ router.route("/")
         // encrypt password
         const hashedPassword = bcrypt.hashSync(password);
 
+        const default_home = `${home_street} ${home_city} ${home_province}`.replaceAll(' ', '+');
+
+        const default_work = `${work_street} ${work_city} ${work_province}`.replaceAll(' ', '+');
+
         // Create user into database + Create Profile
         await prisma.user.create({
             data: {
@@ -37,6 +41,25 @@ router.route("/")
                         default_work,
                         default_mode,
                         default_target_time,
+
+                        Location: {
+                            createMany: {
+                                data: [
+                                    {
+                                        name: "Home",
+                                        street: home_street,
+                                        city: home_city,
+                                        province: home_province
+                                    },
+                                    {
+                                        name: "Work",
+                                        street: work_street,
+                                        city: work_city,
+                                        province: work_province
+                                    }
+                            ]
+                        },
+                        }
                     }
                 }
             }

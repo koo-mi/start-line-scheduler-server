@@ -20,14 +20,26 @@ export async function getDirectionData(req: Request, res: Response) {
 
 
 /* For Google Map Direction API call - for direction & summary */
-export async function directionApi(origin: string, dest: string, time: string | number, mode: string) {
+export async function directionApi(origin: string, dest: string, time: string, mode: string) {
+
+    // Convert Time to today's target time
+    const today = new Date().toString();
+    const dateArr = today.split(' ');
+    const timeSplit = time.split(' ');
+    dateArr[4] = `${timeSplit[0]}:${timeSplit[1]}:00`;
+
+    const timeString = dateArr.join(' ');
+    const targetTime = Date.parse(timeString) / 1000;
+
     // Get data from Google Directions API
     const URL: string = process.env.GOOGLE_DIRECTION_URL;
     const API_KEY: string = process.env.GOOGLE_API_KEY;
 
-    const data = await axios(`${URL}/json?origin=${origin}&destination=${dest}&arrival_time=${time}&mode=${mode}&key=${API_KEY}`);
+    const data = await axios(`${URL}/json?origin=${origin}&destination=${dest}&arrival_time=${targetTime}&mode=${mode}&key=${API_KEY}`);
 
     const directionData = data.data.routes[0].legs[0];
+
+    console.log(directionData);
 
     // Get necessary info from the API response
     const arrivalTime = directionData.arrival_time.text;
