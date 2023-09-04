@@ -31,7 +31,7 @@ async function postNewLocation(req: Request, res: Response) {
     const { profile_id } = decode;
 
     // Validating request
-    const { name, street, city, province } = req.body;
+    const { name, street, city, province, isHome, isWork } = req.body;
 
     if (!name || !street || !city || !province) {
         return res.status(400).json({ message: "Must provide location name and address" })
@@ -47,6 +47,38 @@ async function postNewLocation(req: Request, res: Response) {
         return res.status(400).json({ message: "Name Already in Use: Please select a different name" })
     }
 
+    // Retrieve current default
+    const defaultIds = await getDefault(profile_id);
+    const defaultAddress = `${street} ${city} ${province}`.replaceAll(' ', '+');
+
+    if (isHome) {
+        // Update existing default to false
+        await prisma.location.update({
+            where: { id: defaultIds[0] },
+            data: { isHome: false }
+        })
+
+        // Update profile 
+        await prisma.user_Profile.update({
+            where: { id: profile_id },
+            data: { default_home: defaultAddress }
+        })
+    }
+
+    if (isWork) {
+        // Update existing default to false
+        await prisma.location.update({
+            where: { id: defaultIds[1] },
+            data: { isHome: false }
+        })
+
+        // Update profile 
+        await prisma.user_Profile.update({
+            where: { id: profile_id },
+            data: { default_work: defaultAddress }
+        })
+    }
+
     // Create new location
     await prisma.location.create({
         data: {
@@ -54,6 +86,8 @@ async function postNewLocation(req: Request, res: Response) {
             street,
             city,
             province,
+            isHome,
+            isWork,
             user_ProfileId: profile_id,
         }
     })
@@ -211,7 +245,7 @@ async function deleteLocation(req: Request, res: Response) {
     const [homeId, workId] = await getDefault(profile_id);
 
     if (Number(locId) === homeId || Number(locId) === workId) {
-        return res.status(400).json({message: "You cannot delete default location."})
+        return res.status(400).json({ message: "You cannot delete default location." })
     }
 
     // Delete information
