@@ -11,7 +11,7 @@ const { SECRET } = process.env;
 
 /* Validate login and send token */
 router.route("/")
-    .post(async (req: Request, res: Response) => {
+    .post(async (req: Request, res: Response): Promise<Response> => {
         const { username, password } = req.body;
 
         // Validate - Empty 
@@ -33,12 +33,12 @@ router.route("/")
             if (!user) {
                 return res.status(400).json({ error: { message: "Invalid Login" } })
             }
-            const isPasswordCorrect = bcrypt.compareSync(password, user.password);
+            const isPasswordCorrect: string = bcrypt.compareSync(password, user.password);
 
             // Check if username exist, password matches
             if (user && isPasswordCorrect) {
                 // Create token with ID and username
-                const token = jwt.sign({ id: user.id, username: user.username, profile_id: user.User_Profile[0].id }, SECRET, { expiresIn: "12h" })
+                const token: string = jwt.sign({ id: user.id, username: user.username, profile_id: user.User_Profile[0].id }, SECRET, { expiresIn: "12h" })
                 res.status(200).json({ token })
             } else {
                 res.status(400).json({ error: { message: "Invalid Login" } })
@@ -46,7 +46,6 @@ router.route("/")
         } catch(err) {
             return res.status(500).json({message: "Unable to connect to server."})
         }
-
 
     })
 

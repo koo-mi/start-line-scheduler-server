@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 /* Get all checklist for the user */
-async function getChecklist(req: Request, res: Response) {
+async function getChecklist(req: Request, res: Response):Promise<Response> {
     const decode = authorize(req, res);
     if (!decode) { return };
     const { profile_id } = decode;
@@ -20,7 +20,7 @@ async function getChecklist(req: Request, res: Response) {
 }
 
 /* Get a single checklist item by ID */
-async function getChecklistItem(req: Request, res: Response) {
+async function getChecklistItem(req: Request, res: Response):Promise<Response> {
     const decode = authorize(req, res);
     if (!decode) { return };
     const { profile_id } = decode;
@@ -39,7 +39,7 @@ async function getChecklistItem(req: Request, res: Response) {
 
 
 /* Post new checklist item */
-async function createNewItem(req: Request, res: Response) {
+async function createNewItem(req: Request, res: Response):Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -65,12 +65,12 @@ async function createNewItem(req: Request, res: Response) {
 
 
 /* Edit new checklist item */
-async function editItem(req: Request, res: Response) {
+async function editItem(req: Request, res: Response):Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
     const { profile_id } = decode;
-    const id = Number(req.params.itemId);
+    const id: number = Number(req.params.itemId);
 
     // Validating request
     const { title, description, isDaily, priority } = req.body;
@@ -103,7 +103,7 @@ async function editItem(req: Request, res: Response) {
 }
 
 /* Patch when the item is checked/unchecked */
-async function isChecked(req: Request, res: Response) {
+async function isChecked(req: Request, res: Response):Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -132,12 +132,12 @@ async function isChecked(req: Request, res: Response) {
 
 
 /* Delete checklist item */
-async function deleteItem(req: Request, res: Response) {
+async function deleteItem(req: Request, res: Response):Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
     const { profile_id } = decode;
-    const id = Number(req.params.itemId);
+    const id: number = Number(req.params.itemId);
 
     // Check if item exist
     const currentData = await prisma.checklist.findFirst({

@@ -3,10 +3,11 @@ const authorize = require("../utils/authorize");
 const axios = require("axios");
 
 import { PrismaClient } from '@prisma/client'
+import { DirectionData, StepSummary } from '../model/type';
 const prisma = new PrismaClient()
 
 /* Get Direction data using Google Map API */
-export async function getDirectionData(req: Request, res: Response) {
+export async function getDirectionData(req: Request, res: Response): Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -15,12 +16,12 @@ export async function getDirectionData(req: Request, res: Response) {
 
     const directionRes = await directionApi(origin, dest, time, mode, type);
 
-    res.status(200).json(directionRes);
+    return res.status(200).json(directionRes);
 }
 
 
 /* For Google Map Direction API call - for direction & summary */
-export async function directionApi(origin: string, dest: string, time: string, mode: string, type: string) {
+export async function directionApi(origin: string, dest: string, time: string, mode: string, type: string): Promise<DirectionData> {
 
     // Convert Time to today's target time
     const today = new Date().toString();
@@ -29,7 +30,7 @@ export async function directionApi(origin: string, dest: string, time: string, m
     dateArr[4] = `${timeSplit[0]}:${timeSplit[1]}:00`;
 
     const timeString = dateArr.join(' ');
-    const targetTime = Date.parse(timeString) / 1000; 
+    const targetTime = Date.parse(timeString) / 1000;
 
     // Get data from Google Directions API
     const URL: string = process.env.GOOGLE_DIRECTION_URL;
@@ -41,10 +42,10 @@ export async function directionApi(origin: string, dest: string, time: string, m
         const directionData = data.data.routes[0].legs[0];
 
         // Get necessary info from the API response
-        const arrivalTime = directionData.arrival_time.text;
-        const departureTime = directionData.departure_time.text;
-        const distance = directionData.distance.text;
-        const duration = directionData.duration.text;
+        const arrivalTime: string = directionData.arrival_time.text;
+        const departureTime: string = directionData.departure_time.text;
+        const distance: string = directionData.distance.text;
+        const duration: string = directionData.duration.text;
         const stepsFull = directionData.steps;
 
         const stepsSummary = stepsFull.map((step) => {

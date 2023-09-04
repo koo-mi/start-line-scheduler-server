@@ -3,12 +3,13 @@ import { Request, Response } from 'express'
 const router = express.Router();
 
 import { PrismaClient } from '@prisma/client'
+import { UserData } from "../model/type";
 const prisma = new PrismaClient()
 const bcrypt = require('bcryptjs');
 
 router.route("/")
     // Creating new account
-    .post(async (req: Request, res: Response) => {
+    .post(async (req: Request, res: Response): Promise<Response> => {
         const { name, username, password, default_mode, default_target_time, home_street, home_city, home_province, work_city, work_province, work_street } = req.body;
 
         // Validate - Empty
@@ -17,7 +18,7 @@ router.route("/")
         }
 
         // Check is username exist
-        const isUserExist = await prisma.user.findUnique({ where: { username: username } })
+        const isUserExist: UserData = await prisma.user.findUnique({ where: { username: username } })
 
         // If username is already taken
         if (isUserExist) {
@@ -25,11 +26,11 @@ router.route("/")
         }
 
         // encrypt password
-        const hashedPassword = bcrypt.hashSync(password);
+        const hashedPassword:string = bcrypt.hashSync(password);
 
-        const default_home = `${home_street} ${home_city} ${home_province}`.replaceAll(' ', '+');
+        const default_home: string = `${home_street} ${home_city} ${home_province}`.replaceAll(' ', '+');
 
-        const default_work = `${work_street} ${work_city} ${work_province}`.replaceAll(' ', '+');
+        const default_work: string = `${work_street} ${work_city} ${work_province}`.replaceAll(' ', '+');
 
         // Create user into database + Create Profile
         await prisma.user.create({

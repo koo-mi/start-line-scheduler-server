@@ -2,11 +2,12 @@ import { Request, Response } from 'express';
 const authorize = require("../utils/authorize");
 
 import { PrismaClient } from '@prisma/client'
+import { LocationData } from '../model/type';
 const prisma = new PrismaClient()
 
 
 /* Get all location data */
-async function getAllLocations(req: Request, res: Response) {
+async function getAllLocations(req: Request, res: Response):Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -24,7 +25,7 @@ async function getAllLocations(req: Request, res: Response) {
 
 
 /* Post new location data */
-async function postNewLocation(req: Request, res: Response) {
+async function postNewLocation(req: Request, res: Response):Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -69,7 +70,7 @@ async function postNewLocation(req: Request, res: Response) {
         // Update existing default to false
         await prisma.location.update({
             where: { id: defaultIds[1] },
-            data: { isHome: false }
+            data: { isWork: false }
         })
 
         // Update profile 
@@ -97,7 +98,7 @@ async function postNewLocation(req: Request, res: Response) {
 
 
 /* Get location info by ID */
-async function getSingleLocation(req: Request, res: Response) {
+async function getSingleLocation(req: Request, res: Response):Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -121,7 +122,7 @@ async function getSingleLocation(req: Request, res: Response) {
 }
 
 // Util: Check if location data exist - use: Update / Delete
-async function checkLocationExist(locId: string, profile_id: number) {
+async function checkLocationExist(locId: string, profile_id: number):Promise<LocationData> {
     const locationData = await prisma.location.findFirst({
         where: {
             id: Number(locId),
@@ -134,7 +135,7 @@ async function checkLocationExist(locId: string, profile_id: number) {
 
 
 /* Update location Info by ID */
-async function updateLocation(req: Request, res: Response) {
+async function updateLocation(req: Request, res: Response): Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -201,7 +202,7 @@ async function updateLocation(req: Request, res: Response) {
             // Update existing default to false
             await prisma.location.update({
                 where: { id: defaultIds[1] },
-                data: { isHome: false }
+                data: { isWork: false }
             })
 
             // Update profile 
@@ -228,7 +229,7 @@ async function updateLocation(req: Request, res: Response) {
 
 
 /* Delete location by ID */
-async function deleteLocation(req: Request, res: Response) {
+async function deleteLocation(req: Request, res: Response): Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -260,7 +261,7 @@ async function deleteLocation(req: Request, res: Response) {
 }
 
 // Check if user has default 
-async function getDefault(profile_id) {
+async function getDefault(profile_id: number):Promise<number[]> {
     const home = await prisma.location.findFirst({
         where: {
             user_ProfileId: profile_id,
