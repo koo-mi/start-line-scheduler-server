@@ -4,7 +4,7 @@ const {getDirectionData} = require("../controllers/direction-controller");
 const {getAllLocations, postNewLocation, getSingleLocation, updateLocation, deleteLocation} = require("../controllers/location-controller");
 
 
-router.route("/:origin/:dest/:time/:mode")
+router.route("/:origin/:dest/:time/:mode/:type")
     .get(getDirectionData)
 
 router.route("/location")

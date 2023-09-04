@@ -11,16 +11,16 @@ export async function getDirectionData(req: Request, res: Response) {
     const decode = authorize(req, res);
     if (!decode) { return };
 
-    const { origin, dest, time, mode } = req.params;
+    const { origin, dest, time, mode, type } = req.params;
 
-    const directionRes = await directionApi(origin, dest, time, mode);
+    const directionRes = await directionApi(origin, dest, time, mode, type);
 
     res.status(200).json(directionRes);
 }
 
 
 /* For Google Map Direction API call - for direction & summary */
-export async function directionApi(origin: string, dest: string, time: string, mode: string) {
+export async function directionApi(origin: string, dest: string, time: string, mode: string, type: string) {
 
     // Convert Time to today's target time
     const today = new Date().toString();
@@ -29,34 +29,36 @@ export async function directionApi(origin: string, dest: string, time: string, m
     dateArr[4] = `${timeSplit[0]}:${timeSplit[1]}:00`;
 
     const timeString = dateArr.join(' ');
-    const targetTime = Date.parse(timeString) / 1000;
+    const targetTime = Date.parse(timeString) / 1000; 
 
     // Get data from Google Directions API
     const URL: string = process.env.GOOGLE_DIRECTION_URL;
     const API_KEY: string = process.env.GOOGLE_API_KEY;
 
-    const data = await axios(`${URL}/json?origin=${origin}&destination=${dest}&arrival_time=${targetTime}&mode=${mode}&key=${API_KEY}`);
+    try {
+        const data = await axios(`${URL}/json?origin=${origin}&destination=${dest}&${type}_time=${targetTime}&mode=${mode}&key=${API_KEY}`);
 
-    const directionData = data.data.routes[0].legs[0];
+        const directionData = data.data.routes[0].legs[0];
 
-    console.log(directionData);
+        // Get necessary info from the API response
+        const arrivalTime = directionData.arrival_time.text;
+        const departureTime = directionData.departure_time.text;
+        const distance = directionData.distance.text;
+        const duration = directionData.duration.text;
+        const stepsFull = directionData.steps;
 
-    // Get necessary info from the API response
-    const arrivalTime = directionData.arrival_time.text;
-    const departureTime = directionData.departure_time.text;
-    const distance = directionData.distance.text;
-    const duration = directionData.duration.text;
-    const stepsFull = directionData.steps;
+        const stepsSummary = stepsFull.map((step) => {
+            return {
+                distance: step.distance.text,
+                duration: step.duration.text,
+                instruction: step.html_instructions,
+            }
+        })
 
-    const stepsSummary = stepsFull.map((step) => {
         return {
-            distance: step.distance.text,
-            duration: step.duration.text,
-            instruction: step.html_instructions,
+            arrivalTime, departureTime, distance, duration, stepsSummary
         }
-    })
-
-    return {
-        arrivalTime, departureTime, distance, duration, stepsSummary
+    } catch (err) {
+        return err
     }
 }

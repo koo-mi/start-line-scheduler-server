@@ -43,6 +43,8 @@ model Location {
   street    String
   city      String
   province  String
+  isHome    Boolean  @default(false)
+  isWork    Boolean  @default(false)
   createAt  DateTime @default(now())
   updatedAt DateTime @updatedAt
 

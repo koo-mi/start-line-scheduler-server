@@ -49,13 +49,15 @@ router.route("/")
                                         name: "Home",
                                         street: home_street,
                                         city: home_city,
-                                        province: home_province
+                                        province: home_province,
+                                        isHome: true,
                                     },
                                     {
                                         name: "Work",
                                         street: work_street,
                                         city: work_city,
-                                        province: work_province
+                                        province: work_province,
+                                        isWork: true,
                                     }
                             ]
                         },
