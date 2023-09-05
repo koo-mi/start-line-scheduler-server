@@ -67,7 +67,7 @@ router.route("/")
                 }
             }
         });
-        res.send("Success!");
+        res.status(200).json({message: "Account Successfully created"});
     })
 
 module.exports = router;
