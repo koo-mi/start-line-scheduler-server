@@ -11,9 +11,9 @@ const bcrypt = require('bcryptjs');
 router.route("/")
     // Creating new account
     .post(async (req, res) => {
-    const { name, username, password, default_mode, default_target_time, home_street, home_city, home_province, work_city, work_province, work_street } = req.body;
+    const { name, username, password, default_mode, default_target_time, home_address, work_address } = req.body;
     // Validate - Empty
-    if (!name || !username || !password || !home_street || !home_city || !home_province || !work_street || !work_city || !work_province || !default_mode || !default_target_time) {
+    if (!name || !username || !password || !home_address || !work_address || !default_mode || !default_target_time) {
         return res.status(400).json({ message: "You must provide all fields." });
     }
     // Check is username exist
@@ -24,8 +24,9 @@ router.route("/")
     }
     // encrypt password
     const hashedPassword = bcrypt.hashSync(password);
-    const default_home = `${home_street} ${home_city} ${home_province}`.replaceAll(' ', '+');
-    const default_work = `${work_street} ${work_city} ${work_province}`.replaceAll(' ', '+');
+    // Format the string 
+    const default_home = home_address.replaceAll(' ', '+');
+    const default_work = work_address.replaceAll(' ', '+');
     // Create user into database + Create Profile
     await prisma.user.create({
         data: {
@@ -41,16 +42,12 @@ router.route("/")
                             data: [
                                 {
                                     name: "Home",
-                                    street: home_street,
-                                    city: home_city,
-                                    province: home_province,
+                                    address: home_address,
                                     isHome: true,
                                 },
                                 {
                                     name: "Work",
-                                    street: work_street,
-                                    city: work_city,
-                                    province: work_province,
+                                    address: work_address,
                                     isWork: true,
                                 }
                             ]

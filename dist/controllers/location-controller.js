@@ -30,8 +30,8 @@ async function postNewLocation(req, res) {
     ;
     const { profile_id } = decode;
     // Validating request
-    const { name, street, city, province, isHome, isWork } = req.body;
-    if (!name || !street || !city || !province) {
+    const { name, address, isHome, isWork } = req.body;
+    if (!name || !address) {
         return res.status(400).json({ message: "Must provide location name and address" });
     }
     // Check if name exist
@@ -44,7 +44,7 @@ async function postNewLocation(req, res) {
     }
     // Retrieve current default
     const defaultIds = await getDefault(profile_id);
-    const defaultAddress = `${street} ${city} ${province}`.replaceAll(' ', '+');
+    const newAddress = address.replaceAll(' ', '+');
     if (isHome) {
         // Update existing default to false
         await prisma.location.update({
@@ -54,7 +54,7 @@ async function postNewLocation(req, res) {
         // Update profile 
         await prisma.user_Profile.update({
             where: { id: profile_id },
-            data: { default_home: defaultAddress }
+            data: { default_home: newAddress }
         });
     }
     if (isWork) {
@@ -66,16 +66,14 @@ async function postNewLocation(req, res) {
         // Update profile 
         await prisma.user_Profile.update({
             where: { id: profile_id },
-            data: { default_work: defaultAddress }
+            data: { default_work: newAddress }
         });
     }
     // Create new location
     await prisma.location.create({
         data: {
             name,
-            street,
-            city,
-            province,
+            address,
             isHome,
             isWork,
             user_ProfileId: profile_id,
@@ -126,8 +124,8 @@ async function updateLocation(req, res) {
     const { profile_id } = decode;
     const { locId } = req.params;
     // Validating request
-    const { name, street, city, province, isHome, isWork } = req.body;
-    if (!name || !street || !city || !province) {
+    const { name, address, isHome, isWork } = req.body;
+    if (!name || !address) {
         return res.status(400).json({ message: "Must provide location name and address" });
     }
     // If location data doesn't exist
@@ -144,7 +142,7 @@ async function updateLocation(req, res) {
     }
     // Retrieve current default
     const defaultIds = await getDefault(profile_id);
-    const defaultAddress = `${street} ${city} ${province}`.replaceAll(' ', '+');
+    const defaultAddress = address.replaceAll(' ', '+');
     // If isHome is true 
     if (isHome) {
         // If it was defaultWork don't allow
@@ -159,6 +157,12 @@ async function updateLocation(req, res) {
                 data: { isHome: false }
             });
             // Update profile 
+            await prisma.user_Profile.update({
+                where: { id: profile_id },
+                data: { default_home: defaultAddress }
+            });
+        }
+        else {
             await prisma.user_Profile.update({
                 where: { id: profile_id },
                 data: { default_home: defaultAddress }
@@ -184,6 +188,12 @@ async function updateLocation(req, res) {
                 data: { default_work: defaultAddress }
             });
         }
+        else {
+            await prisma.user_Profile.update({
+                where: { id: profile_id },
+                data: { default_work: defaultAddress }
+            });
+        }
     }
     // Updating the data
     await prisma.location.update({
@@ -192,7 +202,7 @@ async function updateLocation(req, res) {
             user_ProfileId: profile_id
         },
         data: {
-            name, street, city, province, isHome, isWork
+            name, address, isHome, isWork
         }
     });
     return res.status(200).json({ message: "Successfully updated" });

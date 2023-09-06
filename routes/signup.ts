@@ -13,9 +13,9 @@ router.route("/")
         const { name, username, password, default_mode, default_target_time, home_address, work_address } = req.body;
 
         // Validate - Empty
-        // if (!name || !username || !password || !home_address || !work_address || !default_mode || !default_target_time) {
-        //     return res.status(400).json({ message: "You must provide all fields." });
-        // }
+        if (!name || !username || !password || !home_address || !work_address || !default_mode || !default_target_time) {
+            return res.status(400).json({ message: "You must provide all fields." });
+        }
 
         // Check is username exist
         const isUserExist: UserData = await prisma.user.findUnique({ where: { username: username } })
