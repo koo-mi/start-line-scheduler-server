@@ -41,9 +41,7 @@ model User_Profile {
 model Location {
   id        Int      @id @default(autoincrement())
   name      String
-  street    String
-  city      String
-  province  String
+  address   String
   isHome    Boolean  @default(false)
   isWork    Boolean  @default(false)
   createAt  DateTime @default(now())

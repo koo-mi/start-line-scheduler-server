@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 
 
 /* Get all location data */
-async function getAllLocations(req: Request, res: Response):Promise<Response> {
+async function getAllLocations(req: Request, res: Response): Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -25,16 +25,16 @@ async function getAllLocations(req: Request, res: Response):Promise<Response> {
 
 
 /* Post new location data */
-async function postNewLocation(req: Request, res: Response):Promise<Response> {
+async function postNewLocation(req: Request, res: Response): Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
     const { profile_id } = decode;
 
     // Validating request
-    const { name, street, city, province, isHome, isWork } = req.body;
+    const { name, address, isHome, isWork } = req.body;
 
-    if (!name || !street || !city || !province) {
+    if (!name || !address) {
         return res.status(400).json({ message: "Must provide location name and address" })
     }
 
@@ -50,7 +50,7 @@ async function postNewLocation(req: Request, res: Response):Promise<Response> {
 
     // Retrieve current default
     const defaultIds = await getDefault(profile_id);
-    const defaultAddress = `${street} ${city} ${province}`.replaceAll(' ', '+');
+    const newAddress = address.replaceAll(' ', '+');
 
     if (isHome) {
         // Update existing default to false
@@ -62,7 +62,7 @@ async function postNewLocation(req: Request, res: Response):Promise<Response> {
         // Update profile 
         await prisma.user_Profile.update({
             where: { id: profile_id },
-            data: { default_home: defaultAddress }
+            data: { default_home: newAddress }
         })
     }
 
@@ -76,7 +76,7 @@ async function postNewLocation(req: Request, res: Response):Promise<Response> {
         // Update profile 
         await prisma.user_Profile.update({
             where: { id: profile_id },
-            data: { default_work: defaultAddress }
+            data: { default_work: newAddress }
         })
     }
 
@@ -84,9 +84,7 @@ async function postNewLocation(req: Request, res: Response):Promise<Response> {
     await prisma.location.create({
         data: {
             name,
-            street,
-            city,
-            province,
+            address,
             isHome,
             isWork,
             user_ProfileId: profile_id,
@@ -98,7 +96,7 @@ async function postNewLocation(req: Request, res: Response):Promise<Response> {
 
 
 /* Get location info by ID */
-async function getSingleLocation(req: Request, res: Response):Promise<Response> {
+async function getSingleLocation(req: Request, res: Response): Promise<Response> {
     // Authorization 
     const decode = authorize(req, res);
     if (!decode) { return };
@@ -122,7 +120,7 @@ async function getSingleLocation(req: Request, res: Response):Promise<Response> 
 }
 
 // Util: Check if location data exist - use: Update / Delete
-async function checkLocationExist(locId: string, profile_id: number):Promise<LocationData> {
+async function checkLocationExist(locId: string, profile_id: number): Promise<LocationData> {
     const locationData = await prisma.location.findFirst({
         where: {
             id: Number(locId),
@@ -144,9 +142,9 @@ async function updateLocation(req: Request, res: Response): Promise<Response> {
     const { locId } = req.params;
 
     // Validating request
-    const { name, street, city, province, isHome, isWork } = req.body
+    const { name, address, isHome, isWork } = req.body
 
-    if (!name || !street || !city || !province) {
+    if (!name || !address) {
         return res.status(400).json({ message: "Must provide location name and address" })
     }
 
@@ -166,8 +164,8 @@ async function updateLocation(req: Request, res: Response): Promise<Response> {
     }
 
     // Retrieve current default
-    const defaultIds = await getDefault(profile_id);
-    const defaultAddress = `${street} ${city} ${province}`.replaceAll(' ', '+');
+    const defaultIds: number[] = await getDefault(profile_id);
+    const defaultAddress: string = address.replaceAll(' ', '+');
 
     // If isHome is true 
     if (isHome) {
@@ -184,6 +182,11 @@ async function updateLocation(req: Request, res: Response): Promise<Response> {
             })
 
             // Update profile 
+            await prisma.user_Profile.update({
+                where: { id: profile_id },
+                data: { default_home: defaultAddress }
+            })
+        } else {
             await prisma.user_Profile.update({
                 where: { id: profile_id },
                 data: { default_home: defaultAddress }
@@ -210,6 +213,11 @@ async function updateLocation(req: Request, res: Response): Promise<Response> {
                 where: { id: profile_id },
                 data: { default_work: defaultAddress }
             })
+        } else {
+            await prisma.user_Profile.update({
+                where: { id: profile_id },
+                data: { default_work: defaultAddress }
+            })
         }
     }
 
@@ -220,7 +228,7 @@ async function updateLocation(req: Request, res: Response): Promise<Response> {
             user_ProfileId: profile_id
         },
         data: {
-            name, street, city, province, isHome, isWork
+            name, address, isHome, isWork
         }
     });
 
@@ -261,7 +269,7 @@ async function deleteLocation(req: Request, res: Response): Promise<Response> {
 }
 
 // Check if user has default 
-async function getDefault(profile_id: number):Promise<number[]> {
+async function getDefault(profile_id: number): Promise<number[]> {
     const home = await prisma.location.findFirst({
         where: {
             user_ProfileId: profile_id,

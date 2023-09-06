@@ -15,9 +15,7 @@ export type StepSummary = {
 export type LocationData = {
     id: number,
     name: string,
-    street: string,
-    city: string,
-    province: string,
+    address: string,
     isHome: boolean,
     isWork: boolean,
     createAt: Date,
