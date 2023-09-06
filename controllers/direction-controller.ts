@@ -27,7 +27,7 @@ export async function directionApi(origin: string, dest: string, time: string, m
     const today = new Date().toString();
     const dateArr = today.split(' ');
     const timeSplit = time.split(' ');
-    dateArr[4] = `${timeSplit[0]}:${timeSplit[1]}:00`;
+    dateArr[4] = `${Number(timeSplit[0])-4}:${timeSplit[1]}:00`;
 
     const timeString = dateArr.join(' ');
     const targetTime = Date.parse(timeString) / 1000;
