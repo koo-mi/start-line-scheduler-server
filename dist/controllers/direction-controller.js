@@ -27,6 +27,9 @@ async function directionApi(origin, dest, time, mode, type) {
     dateArr[4] = `${Number(timeSplit[0])}:${timeSplit[1]}:00`;
     const timeString = dateArr.join(' ');
     const targetTime = Date.parse(timeString) / 1000;
+    // Format the string 
+    origin = origin.replaceAll(' ', '+');
+    dest = dest.replaceAll(' ', '+');
     // Get data from Google Directions API
     const URL = process.env.GOOGLE_DIRECTION_URL;
     const API_KEY = process.env.GOOGLE_API_KEY;

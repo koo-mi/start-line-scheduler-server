@@ -16,6 +16,10 @@ router.route("/")
     if (!name || !username || !password || !home_address || !work_address || !default_mode || !default_target_time) {
         return res.status(400).json({ message: "You must provide all fields." });
     }
+    // Validate - Same address entry
+    if (home_address === work_address) {
+        return res.status(400).json({ message: 'You must provide different address for your home and work.' });
+    }
     // Check is username exist
     const isUserExist = await prisma.user.findUnique({ where: { username: username } });
     // If username is already taken
@@ -24,17 +28,14 @@ router.route("/")
     }
     // encrypt password
     const hashedPassword = bcrypt.hashSync(password);
-    // Format the string 
-    const default_home = home_address.replaceAll(' ', '+');
-    const default_work = work_address.replaceAll(' ', '+');
     // Create user into database + Create Profile
     await prisma.user.create({
         data: {
             name, username, password: hashedPassword,
             User_Profile: {
                 create: {
-                    default_home,
-                    default_work,
+                    default_home: home_address,
+                    default_work: work_address,
                     default_mode,
                     default_target_time,
                     Location: {

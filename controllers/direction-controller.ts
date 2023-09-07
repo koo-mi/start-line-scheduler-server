@@ -32,6 +32,11 @@ export async function directionApi(origin: string, dest: string, time: string, m
     const timeString = dateArr.join(' ');
     const targetTime = Date.parse(timeString) / 1000;
 
+    // Format the string 
+    origin = origin.replaceAll(' ', '+');
+    dest = dest.replaceAll(' ', '+');
+
+
     // Get data from Google Directions API
     const URL: string = process.env.GOOGLE_DIRECTION_URL;
     const API_KEY: string = process.env.GOOGLE_API_KEY;

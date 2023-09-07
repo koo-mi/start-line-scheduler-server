@@ -42,6 +42,16 @@ async function postNewLocation(req, res) {
     if (isNameExist) {
         return res.status(400).json({ message: "Name Already in Use: Please select a different name" });
     }
+    // Check if address exist 
+    const isAddressExist = await prisma.location.findFirst({
+        where: {
+            user_ProfileId: profile_id,
+            address
+        }
+    });
+    if (isAddressExist) {
+        return res.status(400).json({ message: "Existing address. Please provide different address." });
+    }
     // Retrieve current default
     const defaultIds = await getDefault(profile_id);
     const newAddress = address.replaceAll(' ', '+');
@@ -139,6 +149,16 @@ async function updateLocation(req, res) {
     // If name is already taken
     if (isNameExist && String(isNameExist.id) !== locId) {
         return res.status(400).json({ message: "Name Already in Use: Please select a different name" });
+    }
+    // Check if address exist 
+    const isAddressExist = await prisma.location.findFirst({
+        where: {
+            user_ProfileId: profile_id,
+            address
+        }
+    });
+    if (isAddressExist) {
+        return res.status(400).json({ message: "Existing address. Please provide different address." });
     }
     // Retrieve current default
     const defaultIds = await getDefault(profile_id);
