@@ -53,6 +53,16 @@ router.route("/")
                                 }
                             ]
                         },
+                    },
+                    Checklist: {
+                        createMany: {
+                            data: {
+                                title: "Add something to the checklist!",
+                                description: "Description is optional",
+                                isDaily: false,
+                                priority: "high"
+                            }
+                        }
                     }
                 }
             }
