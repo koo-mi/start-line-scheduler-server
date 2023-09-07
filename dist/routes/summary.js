@@ -44,7 +44,7 @@ router.route("/")
     ;
     const { profile_id } = decode;
     // Validate
-    const { origin, dest, time, mode, type } = req.body;
+    const { origin, dest, time, mode, type, timezone } = req.body;
     // Get location Data
     const locationData = await prisma.location.findMany({
         where: {
@@ -52,7 +52,7 @@ router.route("/")
         }
     });
     // Get direction Data
-    const directionData = await (0, direction_controller_1.directionApi)(origin, dest, time, mode, type);
+    const directionData = await (0, direction_controller_1.directionApi)(origin, dest, time, mode, type, Number(timezone));
     // Get checklist Data
     const checklistData = await prisma.checklist.findMany({
         where: {

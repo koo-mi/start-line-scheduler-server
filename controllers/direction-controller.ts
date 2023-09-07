@@ -12,16 +12,20 @@ export async function getDirectionData(req: Request, res: Response): Promise<Res
     const decode = authorize(req, res);
     if (!decode) { return };
 
-    const { origin, dest, time, mode, type } = req.params;
+    const { origin, dest, time, mode, type, timezone } = req.params;
 
-    const directionRes = await directionApi(origin, dest, time, mode, type);
+    const directionRes = await directionApi(origin, dest, time, mode, type, Number(timezone));
 
     return res.status(200).json(directionRes);
 }
 
 
 /* For Google Map Direction API call - for direction & summary */
-export async function directionApi(origin: string, dest: string, time: string, mode: string, type: string): Promise<DirectionData> {
+export async function directionApi(origin: string, dest: string, time: string, mode: string, type: string, timezone: number): Promise<DirectionData> {
+
+    // Compare timezone
+    const serverTime = new Date();
+    const timezoneDiff: number = serverTime.getTimezoneOffset()/60-timezone;
 
     // Convert Time to today's target time
     const today = new Date().toString();
@@ -30,7 +34,8 @@ export async function directionApi(origin: string, dest: string, time: string, m
     dateArr[4] = `${Number(timeSplit[0])}:${timeSplit[1]}:00`;
 
     const timeString = dateArr.join(' ');
-    const targetTime = Date.parse(timeString) / 1000;
+
+    const targetTime = Date.parse(timeString) / 1000 + (timezoneDiff*3600);
 
     // Format the string 
     origin = origin.replaceAll(' ', '+');
