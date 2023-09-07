@@ -157,7 +157,7 @@ async function updateLocation(req, res) {
             address
         }
     });
-    if (isAddressExist) {
+    if (isAddressExist && String(isAddressExist.id) !== locId) {
         return res.status(400).json({ message: "Existing address. Please provide different address." });
     }
     // Retrieve current default
