@@ -75,7 +75,7 @@ async function editItem(req: Request, res: Response):Promise<Response> {
     // Validating request
     const { title, description, isDaily, priority } = req.body;
 
-    if (!title || !description || !(isDaily === true || isDaily === false) || !priority) {
+    if (!title || !(isDaily === true || isDaily === false) || !priority) {
         return res.status(400).json({ message: "Must have all fields" })
     }
 
