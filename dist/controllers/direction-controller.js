@@ -13,7 +13,8 @@ async function getDirectionData(req, res) {
         return;
     }
     ;
-    const { origin, dest, time, mode, type, timezone } = req.params;
+    const { origin, dest, time, mode, type } = req.params;
+    const { timezone } = req.headers;
     const directionRes = await directionApi(origin, dest, time, mode, type, Number(timezone));
     return res.status(200).json(directionRes);
 }
