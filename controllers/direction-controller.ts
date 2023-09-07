@@ -36,7 +36,7 @@ export async function directionApi(origin: string, dest: string, time: string, m
 
     const timeString = dateArr.join(' ');
 
-    const targetTime = Date.parse(timeString) / 1000 + (timezoneDiff*3600);
+    const targetTime = Date.parse(timeString) / 1000 - (timezoneDiff*3600);
 
     // Format the string 
     origin = origin.replaceAll(' ', '+');
