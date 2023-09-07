@@ -46,6 +46,8 @@ async function directionApi(origin, dest, time, mode, type, timezone) {
         const distance = directionData.distance.text;
         const duration = directionData.duration.text;
         const stepsFull = directionData.steps;
+        const start_location = directionData.start_location;
+        const end_location = directionData.end_location;
         const stepsSummary = stepsFull.map((step) => {
             return {
                 distance: step.distance.text,
@@ -54,7 +56,7 @@ async function directionApi(origin, dest, time, mode, type, timezone) {
             };
         });
         return {
-            arrivalTime, departureTime, distance, duration, stepsSummary
+            arrivalTime, departureTime, distance, duration, stepsSummary, start_location, end_location
         };
     }
     catch (err) {

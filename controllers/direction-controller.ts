@@ -3,7 +3,7 @@ const authorize = require("../utils/authorize");
 const axios = require("axios");
 
 import { PrismaClient } from '@prisma/client'
-import { DirectionData, StepSummary } from '../model/type';
+import { DirectionData, LatLng, StepSummary } from '../model/type';
 const prisma = new PrismaClient()
 
 /* Get Direction data using Google Map API */
@@ -58,6 +58,9 @@ export async function directionApi(origin: string, dest: string, time: string, m
         const distance: string = directionData.distance.text;
         const duration: string = directionData.duration.text;
         const stepsFull = directionData.steps;
+        const start_location: LatLng = directionData.start_location;
+        const end_location: LatLng = directionData.end_location;
+
 
         const stepsSummary = stepsFull.map((step) => {
             return {
@@ -68,7 +71,7 @@ export async function directionApi(origin: string, dest: string, time: string, m
         })
 
         return {
-            arrivalTime, departureTime, distance, duration, stepsSummary
+            arrivalTime, departureTime, distance, duration, stepsSummary, start_location, end_location
         }
     } catch (err) {
         return err

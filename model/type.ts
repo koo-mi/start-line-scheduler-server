@@ -3,7 +3,15 @@ export type DirectionData = {
     departureTime: string,
     distance: string,
     duration: string,
-    stepsSummary: StepSummary[]
+    stepsSummary: StepSummary[],
+    start_location: LatLng
+    end_location: LatLng
+}
+
+
+export type LatLng = {
+    lat: number,
+    lng: number,
 }
 
 export type StepSummary = {
