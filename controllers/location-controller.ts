@@ -62,7 +62,6 @@ async function postNewLocation(req: Request, res: Response): Promise<Response> {
 
     // Retrieve current default
     const defaultIds = await getDefault(profile_id);
-    const newAddress = address.replaceAll(' ', '+');
 
     if (isHome) {
         // Update existing default to false
@@ -74,7 +73,7 @@ async function postNewLocation(req: Request, res: Response): Promise<Response> {
         // Update profile 
         await prisma.user_Profile.update({
             where: { id: profile_id },
-            data: { default_home: newAddress }
+            data: { default_home: address }
         })
     }
 
@@ -88,7 +87,7 @@ async function postNewLocation(req: Request, res: Response): Promise<Response> {
         // Update profile 
         await prisma.user_Profile.update({
             where: { id: profile_id },
-            data: { default_work: newAddress }
+            data: { default_work: address }
         })
     }
 
@@ -188,7 +187,6 @@ async function updateLocation(req: Request, res: Response): Promise<Response> {
 
     // Retrieve current default
     const defaultIds: number[] = await getDefault(profile_id);
-    const defaultAddress: string = address.replaceAll(' ', '+');
 
     // If isHome is true 
     if (isHome) {
@@ -207,12 +205,12 @@ async function updateLocation(req: Request, res: Response): Promise<Response> {
             // Update profile 
             await prisma.user_Profile.update({
                 where: { id: profile_id },
-                data: { default_home: defaultAddress }
+                data: { default_home: address }
             })
         } else {
             await prisma.user_Profile.update({
                 where: { id: profile_id },
-                data: { default_home: defaultAddress }
+                data: { default_home: address }
             })
         }
     }
@@ -234,12 +232,12 @@ async function updateLocation(req: Request, res: Response): Promise<Response> {
             // Update profile 
             await prisma.user_Profile.update({
                 where: { id: profile_id },
-                data: { default_work: defaultAddress }
+                data: { default_work: address }
             })
         } else {
             await prisma.user_Profile.update({
                 where: { id: profile_id },
-                data: { default_work: defaultAddress }
+                data: { default_work: address }
             })
         }
     }
