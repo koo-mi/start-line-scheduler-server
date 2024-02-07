@@ -49,7 +49,7 @@ export async function directionApi(origin: string, dest: string, time: string, m
 
     try {
         const data = await axios(`${URL}/json?origin=${origin}&destination=${dest}&${type}_time=${targetTime}&mode=${mode}&key=${API_KEY}`);
-
+        
         const directionData = data.data.routes[0].legs[0];
 
         // Get necessary info from the API response
