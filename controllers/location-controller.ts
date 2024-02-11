@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
+import prisma from '../prisma/client';
 const authorize = require('../utils/authorize');
 
-import { PrismaClient } from '@prisma/client';
 import { LocationData } from '../model/type';
-const prisma = new PrismaClient();
 
 /* Get all location data */
 async function getAllLocations(req: Request, res: Response): Promise<Response> {

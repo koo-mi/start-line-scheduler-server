@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
+import { DirectionData, LatLng, StepSummary } from '../model/type';
+
 const authorize = require('../utils/authorize');
 const axios = require('axios');
-
-import { PrismaClient } from '@prisma/client';
-import { DirectionData, LatLng, StepSummary } from '../model/type';
-const prisma = new PrismaClient();
 
 /* Get Direction data using Google Map API */
 export async function getDirectionData(

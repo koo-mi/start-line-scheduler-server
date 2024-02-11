@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 const authorize = require('../utils/authorize');
 
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import prisma from '../prisma/client';
 
 /* Get all checklist for the user */
 async function getChecklist(req: Request, res: Response): Promise<Response> {

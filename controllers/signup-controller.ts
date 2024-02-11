@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { UserData } from '../model/type';
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import prisma from '../prisma/client';
 const bcrypt = require('bcryptjs');
 
 async function registerUser(req: Request, res: Response): Promise<Response> {
