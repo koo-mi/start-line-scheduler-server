@@ -1,11 +1,9 @@
-import express from "express";
+import express from 'express';
 const router = express.Router();
-const { loginGuest } = require("../controllers/guest-controller");
+const { loginGuest } = require('../controllers/guest-controller');
 
-router.route("/")
-    .post(loginGuest);
+router.route('/').post(loginGuest);
 
-router.route("/signup")
-    .post();
+router.route('/signup').post();
 
 module.exports = router;
